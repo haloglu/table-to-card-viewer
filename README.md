@@ -1,75 +1,26 @@
-# Nuxt Minimal Starter
+# 🔄 Table to Card Viewer
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+A responsive and reusable **Vue 3 + Nuxt 3** component that toggles between **table** and **card** views for better mobile usability.
 
-## Setup
+## ✨ Features
 
-Make sure to install dependencies:
+- 🧩 **Reusable components** like `TableRow.vue` & `CardItem.vue`
+- 📱 **Responsive layout** (desktop & mobile)
+- 🔀 **Toggle between views** with a single switch
+- 🎨 **Modular SCSS styling**
+- ⚙️ Built with Nuxt 3
+
+## 🛠 Setup
 
 ```bash
-# npm
 npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
 npm run dev
 
-# pnpm
-pnpm dev
+## 🚧 Coming Soon
+- 🌗 Dark/Light theme
+- 📡 Dynamic data from API
+- 📦 Pagination, filtering, sorting
 
-# yarn
-yarn dev
-
-# bun
-bun run dev
+## 👨‍💻 Author
+- Created by @haloglu with ☕ & ❤️
 ```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
