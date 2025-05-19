@@ -15,12 +15,14 @@ A responsive and reusable **Vue 3 + Nuxt 3** component that toggles between **ta
 ```bash
 npm install
 npm run dev
+```
 
 ## 🚧 Coming Soon
+
 - 🌗 Dark/Light theme
 - 📡 Dynamic data from API
 - 📦 Pagination, filtering, sorting
 
 ## 👨‍💻 Author
+
 - Created by @haloglu with ☕ & ❤️
-```
