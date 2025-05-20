@@ -10,6 +10,11 @@ A responsive and reusable **Vue 3 + Nuxt 3** component that toggles between **ta
 - 🎨 **Modular SCSS styling**
 - ⚙️ Built with Nuxt 3
 
+### ✨ UI Update
+
+- Basic dark mode styling for table and card views
+- Styled toggle switch for view selection
+
 ## 🛠 Setup
 
 ```bash
@@ -19,7 +24,6 @@ npm run dev
 
 ## 🚧 Coming Soon
 
-- 🌗 Dark/Light theme
 - 📡 Dynamic data from API
 - 📦 Pagination, filtering, sorting
 
