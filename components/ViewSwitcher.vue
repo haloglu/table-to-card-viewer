@@ -220,6 +220,32 @@ onBeforeUnmount(() => {
   transform: scale(0.95);
 }
 
+body.dark {
+  .view-box {
+    background-color: #181818;
+    box-shadow: 0 4px 16px rgba(255, 255, 255, 0.04);
+  }
+
+  .data-table {
+    thead {
+      background-color: #232323;
+
+      th {
+        color: #ddd;
+      }
+    }
+
+    td {
+      color: #ccc;
+      border-top: 1px solid #333;
+    }
+  }
+
+  .card-grid {
+    background-color: transparent;
+  }
+}
+
 @media (max-width: 768px) {
   .view-box {
     padding: 16px;

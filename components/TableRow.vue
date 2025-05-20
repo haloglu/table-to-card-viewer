@@ -100,4 +100,19 @@ const getColor = (name) => {
     background-color: #ef4444;
   }
 }
+
+body.dark {
+  .user-name {
+    color: #f1f1f1;
+  }
+
+  .user-cell {
+    color: #f1f1f1;
+
+    .avatar {
+      background-color: #333;
+      color: #fff;
+    }
+  }
+}
 </style>

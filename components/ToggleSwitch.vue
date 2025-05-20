@@ -52,10 +52,24 @@ defineEmits(["update:modelValue"]);
 }
 
 input:checked + .slider {
-  background-color: #2563eb; // kurumsal mavi tonu (Tailwind blue-600)
+  background-color: #2563eb;
 }
 
 input:checked + .slider::before {
   transform: translateX(26px);
+}
+
+/* 🌙 Dark Mode */
+body.dark .slider {
+  background-color: #4b5563; // Tailwind slate-600
+}
+
+body.dark input:checked + .slider {
+  background-color: #3b82f6; // Tailwind blue-500
+}
+
+body.dark .slider::before {
+  background-color: #e5e7eb; // light gray thumb in dark
+  box-shadow: 0 2px 6px rgba(255, 255, 255, 0.15);
 }
 </style>

@@ -1,3 +1,7 @@
+<!-- app.vue -->
 <template>
-  <NuxtPage />
+  <div>
+    <ThemeToggle />
+    <NuxtPage />
+  </div>
 </template>

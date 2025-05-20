@@ -81,11 +81,29 @@ const getColor = (name) => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  transition: box-shadow 0.3s ease;
+  transition: all 0.3s ease;
 
   &:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   }
+}
+
+body.dark .card {
+  background-color: #1e1e1e;
+  border-color: #2a2a2a;
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.04);
+}
+
+body.dark .card .name {
+  color: #f1f1f1;
+}
+
+body.dark .card .position {
+  color: #bbb;
+}
+
+body.dark .card-body {
+  color: #ccc;
 }
 
 .status-chip {

@@ -16,7 +16,7 @@
   border-radius: 10px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
   padding: 20px;
-  transition: box-shadow 0.3s ease;
+  transition: box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -36,5 +36,27 @@
     font-size: 14px;
     color: #555;
     margin: 0;
+  }
+}
+
+/* 🌙 DARK MODE */
+body.dark {
+  .card-item {
+    background-color: #1e1e1e !important; // override için garanti
+    border: 1px solid #2a2a2a;
+    color: #eee;
+    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.05);
+
+    h3 {
+      color: #f1f1f1;
+    }
+
+    p {
+      color: #cfcfcf;
+    }
+
+    &:hover {
+      box-shadow: 0 4px 16px rgba(255, 255, 255, 0.08);
+    }
   }
 }
