@@ -8,12 +8,16 @@ A responsive and reusable **Vue 3 + Nuxt 3** component that toggles between **ta
 - 📱 **Responsive layout** (desktop & mobile)
 - 🔀 **Toggle between views** with a single switch
 - 🎨 **Modular SCSS styling**
+- 🌙 **Dark mode support**
+- 🧭 **Status-based filtering** (Aktif / Pasif)
 - ⚙️ Built with Nuxt 3
 
-### ✨ UI Update
+## 🧪 Latest UI Updates
 
-- Basic dark mode styling for table and card views
-- Styled toggle switch for view selection
+- ✅ Dropdown-style **status filter** with icon-based toggle
+- ✅ **Card & table transitions** with smooth fade animations
+- ✅ Improved styling for light & dark modes
+- ✅ Clean dropdown behavior with auto-close
 
 ## 🛠 Setup
 

@@ -4,8 +4,9 @@ import {
   faLocationDot,
   faCalendar,
   faShield,
-  faSun, // ☀️ EKLENDİ
-  faMoon, // 🌙 EKLENDİ
+  faSun,
+  faMoon,
+  faFilter,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
@@ -15,8 +16,9 @@ library.add(
   faLocationDot,
   faCalendar,
   faShield,
-  faSun, // ☀️ EKLENDİ
-  faMoon // 🌙 EKLENDİ
+  faSun,
+  faMoon,
+  faFilter
 );
 
 export default defineNuxtPlugin((nuxtApp) => {

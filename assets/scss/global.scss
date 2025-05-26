@@ -1,6 +1,7 @@
 @use "./components/table";
 @use "./components/card";
 
+// Global gövde stilleri
 body {
   background-color: #f6f6f6;
   color: #1a1a1a;
@@ -12,6 +13,7 @@ body {
   }
 }
 
+// Kart ve tablo içinde kullanılan etiket renkleri
 .status-label {
   &.active {
     background-color: #00c853;

@@ -45,7 +45,7 @@ defineProps({
 
 const getInitials = (name) => {
   if (!name) return "";
-  const words = name.trim().split(" ");
+  const words = name?.trim()?.split(" ");
   return (words[0][0] + (words.at(-1)?.[0] || "")).toUpperCase();
 };
 
