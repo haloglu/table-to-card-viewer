@@ -2,69 +2,92 @@
   <div class="view-container">
     <div class="view-box">
       <div class="filter-toggle-wrapper">
-        <div class="filter-wrapper">
-          <font-awesome-icon
-            :icon="['fas', 'filter']"
-            class="filter-icon-only"
-            @click="showFilter = !showFilter"
-            title="Filtrele"
-          />
-          <transition name="fade">
-            <div v-if="showFilter" class="custom-dropdown">
-              <ul>
-                <li
-                  v-for="option in ['', 'Aktif', 'Pasif']"
-                  :key="option"
-                  :class="{ active: selectedStatus === option }"
-                  @click="selectFilter(option)"
-                >
-                  {{ option || "Hepsi" }}
-                </li>
-              </ul>
-            </div>
-          </transition>
-        </div>
+        <div class="filter-search-row">
+          <div class="filter-wrapper">
+            <font-awesome-icon
+              :icon="['fas', 'filter']"
+              class="filter-icon-only"
+              @click="showFilter = !showFilter"
+              title="Filtrele"
+            />
 
+            <transition name="fade">
+              <div v-if="showFilter" class="custom-dropdown">
+                <ul>
+                  <li
+                    v-for="option in ['', 'Aktif', 'Pasif']"
+                    :key="option"
+                    :class="{ active: selectedStatus === option }"
+                    @click="selectFilter(option)"
+                  >
+                    {{ option || "Hepsi" }}
+                  </li>
+                </ul>
+              </div>
+            </transition>
+          </div>
+
+          <SearchInput @update:search="searchQuery = $event" />
+        </div>
         <ToggleSwitch v-if="!isMobile" v-model="isCardView" />
       </div>
 
       <Transition name="fade" mode="out-in">
-        <section v-if="isCardView" class="card-grid">
-          <CardItem
-            v-for="item in filteredItems"
-            :key="item.id"
-            :title="item.title"
-            :description="item.description"
-            :email="item.email"
-            :location="item.location"
-            :joined-at="item.joinedAt"
-            :role="item.role"
-            :status="item.status"
-          />
-        </section>
+        <div>
+          <div v-if="isLoading" class="loading-wrapper">
+            <font-awesome-icon
+              :icon="['fas', 'spinner']"
+              spin
+              class="loading-icon"
+            />
+          </div>
 
-        <div v-else class="table-wrapper">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Kullanıcı</th>
-                <th>Pozisyon</th>
-                <th>Email</th>
-                <th>Lokasyon</th>
-                <th>Katılım</th>
-                <th>Rol</th>
-                <th>Durum</th>
-              </tr>
-            </thead>
+          <section
+            v-else-if="isCardView && filteredItems.length > 0"
+            class="card-grid"
+          >
+            <CardItem
+              v-for="item in filteredItems"
+              :key="item.id"
+              v-bind="item"
+            />
+          </section>
 
-            <tbody>
-              <TableRow
-                v-for="item in filteredItems"
-                :key="item.id"
-                v-bind="item"
-              />
-            </tbody>
-          </table>
+          <div
+            v-else-if="!isCardView && filteredItems.length > 0"
+            class="table-wrapper"
+          >
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Kullanıcı</th>
+                  <th>Pozisyon</th>
+                  <th>Email</th>
+                  <th>Lokasyon</th>
+                  <th>Katılım</th>
+                  <th>Rol</th>
+                  <th>Durum</th>
+                </tr>
+              </thead>
+              <tbody>
+                <TableRow
+                  v-for="item in filteredItems"
+                  :key="item.id"
+                  v-bind="item"
+                />
+              </tbody>
+            </table>
+          </div>
+
+          <div v-else class="empty-state">
+            <font-awesome-icon
+              :icon="['fas', 'magnifying-glass']"
+              class="empty-icon"
+            />
+            <p class="empty-message">
+              Aradığınız kriterlere uygun sonuç bulunamadı.
+            </p>
+          </div>
         </div>
       </Transition>
     </div>
@@ -72,12 +95,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, computed } from "vue";
+import { ref, onMounted, onBeforeUnmount, computed, watch } from "vue";
 import ToggleSwitch from "~/components/ToggleSwitch.vue";
 import CardItem from "~/components/CardItem.vue";
 import TableRow from "~/components/TableRow.vue";
+import SearchInput from "~/components/SearchInput.vue";
+
+const searchQuery = ref("");
 
 const isCardView = ref(true);
+
+const isLoading = ref(false);
 
 const items = [
   {
@@ -150,9 +178,35 @@ function selectFilter(option) {
 const selectedStatus = ref("");
 const showFilter = ref(false);
 
+let timeout;
+watch([searchQuery, selectedStatus], () => {
+  clearTimeout(timeout);
+  isLoading.value = true;
+  timeout = setTimeout(() => {
+    isLoading.value = false;
+  }, 800);
+});
+
 const filteredItems = computed(() => {
-  if (!selectedStatus.value) return items;
-  return items.filter((item) => item.status === selectedStatus.value);
+  let result = items;
+
+  if (selectedStatus.value) {
+    result = result.filter((item) => item.status === selectedStatus.value);
+  }
+
+  if (searchQuery.value.trim() !== "") {
+    const q = searchQuery.value.toLowerCase();
+    result = result.filter(
+      (item) =>
+        item.title.toLowerCase().includes(q) ||
+        item.description.toLowerCase().includes(q) ||
+        item.email.toLowerCase().includes(q) ||
+        item.location.toLowerCase().includes(q) ||
+        item.role.toLowerCase().includes(q)
+    );
+  }
+
+  return result;
 });
 
 const isMobile = ref(false);
@@ -190,6 +244,34 @@ onBeforeUnmount(() => {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
 }
 
+.loading-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 0;
+  min-height: 200px;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.loading-icon {
+  font-size: 36px;
+  color: #6b7280; // light mode için
+}
+
+/* 🌙 Dark Mode */
+body.dark .loading-icon {
+  color: #a1a1aa;
+}
+
 .filter-toggle-wrapper {
   display: flex;
   justify-content: space-between;
@@ -215,6 +297,22 @@ onBeforeUnmount(() => {
   &:hover {
     background-color: #d1d5db;
   }
+}
+
+.filter-search-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-grow: 1;
+}
+
+.filter-wrapper {
+  flex-shrink: 0;
+}
+
+.search-box {
+  max-width: 280px;
+  width: 100%;
 }
 
 .custom-dropdown {
@@ -302,9 +400,18 @@ onBeforeUnmount(() => {
     height: 8px;
   }
 
+  &::-webkit-scrollbar-track {
+    background: transparent; /* ya da #1a1a1a gibi koyu zemin */
+  }
+
   &::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: #222; /* 👈 koyu gri */
     border-radius: 9999px;
+    cursor: pointer;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #333; /* 👈 hover'da biraz daha açık */
   }
 }
 
@@ -368,6 +475,47 @@ body.dark {
       color: #ccc;
       border-top: 1px solid #333;
     }
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6b7280; // Tailwind gray-500
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  border: 2px dashed #e5e7eb;
+  border-radius: 12px;
+  background-color: #f9fafb;
+  margin-top: 24px;
+}
+
+.empty-icon {
+  font-size: 40px;
+  color: #9ca3af;
+}
+
+.empty-message {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* 🌙 Dark Mode */
+body.dark {
+  .empty-state {
+    background-color: #1f1f1f;
+    color: #ccc;
+    border-color: #333;
+  }
+
+  .empty-icon {
+    color: #999;
+  }
+
+  .empty-message {
+    color: #ddd;
   }
 }
 
