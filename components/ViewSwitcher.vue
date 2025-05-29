@@ -233,6 +233,9 @@ onBeforeUnmount(() => {
   display: flex;
   justify-content: center;
   padding: 24px;
+  max-width: 100vw; // ✅ Taşmayı önler
+  overflow-x: hidden; // ✅ Scrollbar'ı tamamen engeller
+  box-sizing: border-box; // ✅ Padding düzgün hesaplanır
 }
 
 .view-box {
@@ -242,6 +245,7 @@ onBeforeUnmount(() => {
   padding: 24px;
   border-radius: 12px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  overflow-x: hidden;
 }
 
 .loading-wrapper {
@@ -361,6 +365,7 @@ body.dark .loading-icon {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 20px;
+  overflow-x: hidden;
 }
 
 /* Table layout */
@@ -393,25 +398,37 @@ body.dark .loading-icon {
 
 .table-wrapper {
   width: 100%;
+  max-width: 100vw;
   overflow-x: auto;
   border-radius: 8px;
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch;
 
   &::-webkit-scrollbar {
     height: 8px;
   }
 
   &::-webkit-scrollbar-track {
-    background: transparent; /* ya da #1a1a1a gibi koyu zemin */
+    background: transparent;
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: #222; /* 👈 koyu gri */
+    background-color: #bbb; // ✅ Light mode için daha açık ton
     border-radius: 9999px;
     cursor: pointer;
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background-color: #333; /* 👈 hover'da biraz daha açık */
+    background-color: #999;
+  }
+
+  // 🌙 Dark mode scroll
+  body.dark &::-webkit-scrollbar-thumb {
+    background-color: #222;
+  }
+
+  body.dark &::-webkit-scrollbar-thumb:hover {
+    background-color: #333;
   }
 }
 

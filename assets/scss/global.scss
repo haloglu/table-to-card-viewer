@@ -1,6 +1,13 @@
 @use "./components/table";
 @use "./components/card";
 
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+  touch-action: pan-y;
+}
+
 // Global gövde stilleri
 body {
   background-color: #f6f6f6;
