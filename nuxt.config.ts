@@ -19,6 +19,38 @@ export default defineNuxtConfig({
       link: [
         { rel: "manifest", href: "/manifest.webmanifest" },
         { rel: "icon", href: "/favicon.ico" },
+
+        // ✅ Splash Screens for iOS
+        {
+          rel: "apple-touch-startup-image",
+          href: "/apple-splash-1242-2688.jpg",
+          media:
+            "(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)",
+        },
+        {
+          rel: "apple-touch-startup-image",
+          href: "/apple-splash-1170-2532.jpg",
+          media:
+            "(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)",
+        },
+        {
+          rel: "apple-touch-startup-image",
+          href: "/apple-splash-1284-2778.jpg",
+          media:
+            "(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)",
+        },
+        {
+          rel: "apple-touch-startup-image",
+          href: "/apple-splash-1125-2436.jpg",
+          media:
+            "(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)",
+        },
+        {
+          rel: "apple-touch-startup-image",
+          href: "/apple-splash-1536-2048.jpg",
+          media:
+            "(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)",
+        },
       ],
     },
   },
