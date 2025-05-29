@@ -14,6 +14,15 @@ export default defineNuxtConfig({
 
   modules: ["@vite-pwa/nuxt"],
 
+  app: {
+    head: {
+      link: [
+        { rel: "manifest", href: "/manifest.webmanifest" },
+        { rel: "icon", href: "/favicon.ico" },
+      ],
+    },
+  },
+
   // @ts-ignore: This config is recognized at runtime by the PWA module
   pwa: {
     registerType: "autoUpdate",
@@ -35,9 +44,6 @@ export default defineNuxtConfig({
         },
       ],
     },
-    // workbox: {
-    //   globPatterns: ["**/*.{js,css,html,png,svg,ico,json}"],
-    // },
     devOptions: {
       enabled: true,
     },
