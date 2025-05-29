@@ -34,8 +34,11 @@ export default defineNuxtConfig({
       theme_color: "#2563eb",
       background_color: "#2563eb",
       start_url: "/",
+      scope: "/",
       display: "standalone",
+      display_override: ["fullscreen", "standalone", "minimal-ui"],
       lang: "tr",
+      dir: "ltr",
       icons: [
         {
           src: "/app-icon.png",
