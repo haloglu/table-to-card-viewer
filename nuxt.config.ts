@@ -134,49 +134,48 @@ export default defineNuxtConfig({
       ],
     },
 
-   workbox: {
-  navigateFallback: "/offline.html",
-  navigateFallbackDenylist: [
-    new RegExp("^/offline.html$"),
-    new RegExp("\\.\\w+$"), // statik dosyaları dışla
-  ],
-  runtimeCaching: [
-    {
-      urlPattern: ({ request }) => request.mode === "navigate",
-      handler: "NetworkFirst",
-      options: {
-        cacheName: "pages-cache",
-        expiration: {
-          maxEntries: 50,
-          maxAgeSeconds: 60 * 60 * 24 * 7,
+    workbox: {
+      navigateFallback: "/offline.html",
+      navigateFallbackDenylist: [
+        new RegExp("^/offline.html$"),
+        new RegExp("\\.\\w+$"), // statik dosyaları dışla
+      ],
+      runtimeCaching: [
+        {
+          urlPattern: ({ request }) => request.mode === "navigate",
+          handler: "NetworkFirst",
+          options: {
+            cacheName: "pages-cache",
+            expiration: {
+              maxEntries: 50,
+              maxAgeSeconds: 60 * 60 * 24 * 7,
+            },
+          },
         },
-      },
-    },
-    {
-      urlPattern: /\.(?:js|css|woff2?)$/,
-      handler: "CacheFirst",
-      options: {
-        cacheName: "static-resources",
-        expiration: {
-          maxEntries: 50,
-          maxAgeSeconds: 60 * 60 * 24 * 30,
+        {
+          urlPattern: /\.(?:js|css|woff2?)$/,
+          handler: "CacheFirst",
+          options: {
+            cacheName: "static-resources",
+            expiration: {
+              maxEntries: 50,
+              maxAgeSeconds: 60 * 60 * 24 * 30,
+            },
+          },
         },
-      },
-    },
-    {
-      urlPattern: /\.(?:png|jpg|jpeg|svg|gif|ico)$/,
-      handler: "CacheFirst",
-      options: {
-        cacheName: "image-cache",
-        expiration: {
-          maxEntries: 100,
-          maxAgeSeconds: 60 * 60 * 24 * 30,
+        {
+          urlPattern: /\.(?:png|jpg|jpeg|svg|gif|ico)$/,
+          handler: "CacheFirst",
+          options: {
+            cacheName: "image-cache",
+            expiration: {
+              maxEntries: 100,
+              maxAgeSeconds: 60 * 60 * 24 * 30,
+            },
+          },
         },
-      },
+      ],
     },
-  ],
-}
-
 
     devOptions: {
       enabled: true,
