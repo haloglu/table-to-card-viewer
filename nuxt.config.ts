@@ -95,12 +95,23 @@ export default defineNuxtConfig({
             "(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)",
         },
       ],
+      meta: [
+        { name: "apple-mobile-web-app-capable", content: "yes" },
+        { name: "apple-mobile-web-app-status-bar-style", content: "default" },
+      ],
     },
   },
 
   // @ts-ignore: This config is recognized at runtime by the PWA module
   pwa: {
     registerType: "autoUpdate",
+
+    includeAssets: [
+      "favicon.ico",
+      "app-icon.png",
+      "offline.html", // 💥 En önemli ekleme → HATA çözülür!
+    ],
+
     manifest: {
       name: "Table to Card Viewer",
       short_name: "T2C Viewer",
@@ -122,20 +133,20 @@ export default defineNuxtConfig({
         },
       ],
     },
-    devOptions: {
-      enabled: true,
-    },
-    // 💥 OFFLINE desteği için ekliyoruz:
+
     workbox: {
+      // Fallback tanımı (offline sayfası)
+      navigateFallback: "/offline.html",
+
       runtimeCaching: [
         {
-          urlPattern: /^https:\/\/table-to-card-viewer\.netlify\.app\/.*$/, // kendi domainin → REGEX dikkat!
-          handler: "CacheFirst",
+          urlPattern: ({ request }) => request.mode === "navigate",
+          handler: "NetworkFirst",
           options: {
             cacheName: "pages-cache",
             expiration: {
               maxEntries: 50,
-              maxAgeSeconds: 60 * 60 * 24 * 7, // 7 gün
+              maxAgeSeconds: 60 * 60 * 24 * 7,
             },
           },
         },
@@ -146,7 +157,7 @@ export default defineNuxtConfig({
             cacheName: "static-resources",
             expiration: {
               maxEntries: 50,
-              maxAgeSeconds: 60 * 60 * 24 * 30, // 30 gün
+              maxAgeSeconds: 60 * 60 * 24 * 30,
             },
           },
         },
@@ -157,12 +168,15 @@ export default defineNuxtConfig({
             cacheName: "image-cache",
             expiration: {
               maxEntries: 100,
-              maxAgeSeconds: 60 * 60 * 24 * 30, // 30 gün
+              maxAgeSeconds: 60 * 60 * 24 * 30,
             },
           },
         },
       ],
-      navigateFallback: "/offline.html", // 👈 Offline fallback sayfası (bir tane koyacağız)
+    },
+
+    devOptions: {
+      enabled: true,
     },
   },
 });
