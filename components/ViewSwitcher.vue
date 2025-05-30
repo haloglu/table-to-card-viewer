@@ -12,7 +12,26 @@
             />
             <transition name="fade">
               <div v-if="showFilter" class="custom-dropdown">
-                <!-- dropdown -->
+                <ul>
+                  <li
+                    :class="{ active: selectedStatus === '' }"
+                    @click="selectFilter('')"
+                  >
+                    Hepsi
+                  </li>
+                  <li
+                    :class="{ active: selectedStatus === 'Aktif' }"
+                    @click="selectFilter('Aktif')"
+                  >
+                    Aktif
+                  </li>
+                  <li
+                    :class="{ active: selectedStatus === 'Pasif' }"
+                    @click="selectFilter('Pasif')"
+                  >
+                    Pasif
+                  </li>
+                </ul>
               </div>
             </transition>
           </div>
