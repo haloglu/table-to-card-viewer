@@ -19,13 +19,32 @@ export default defineNuxtConfig({
       link: [
         { rel: "manifest", href: "/manifest.webmanifest" },
         { rel: "icon", href: "/favicon.ico" },
+        { rel: "apple-touch-icon", href: "/app-icon.png" }, // ICON da önemli ✅
 
-        // ✅ Splash Screens for iOS
+        // SPLASH SCREENLER ✅
         {
           rel: "apple-touch-startup-image",
-          href: "/apple-splash-1242-2688.jpg",
+          href: "/apple-splash-640-1136.jpg",
           media:
-            "(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)",
+            "(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)",
+        },
+        {
+          rel: "apple-touch-startup-image",
+          href: "/apple-splash-750-1334.jpg",
+          media:
+            "(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)",
+        },
+        {
+          rel: "apple-touch-startup-image",
+          href: "/apple-splash-828-1792.jpg",
+          media:
+            "(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)",
+        },
+        {
+          rel: "apple-touch-startup-image",
+          href: "/apple-splash-1125-2436.jpg",
+          media:
+            "(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)",
         },
         {
           rel: "apple-touch-startup-image",
@@ -41,15 +60,39 @@ export default defineNuxtConfig({
         },
         {
           rel: "apple-touch-startup-image",
-          href: "/apple-splash-1125-2436.jpg",
+          href: "/apple-splash-1179-2556.jpg",
           media:
-            "(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)",
+            "(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)",
+        },
+        {
+          rel: "apple-touch-startup-image",
+          href: "/apple-splash-1290-2796.jpg",
+          media:
+            "(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)",
         },
         {
           rel: "apple-touch-startup-image",
           href: "/apple-splash-1536-2048.jpg",
           media:
             "(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)",
+        },
+        {
+          rel: "apple-touch-startup-image",
+          href: "/apple-splash-1668-2224.jpg",
+          media:
+            "(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2)",
+        },
+        {
+          rel: "apple-touch-startup-image",
+          href: "/apple-splash-1668-2388.jpg",
+          media:
+            "(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)",
+        },
+        {
+          rel: "apple-touch-startup-image",
+          href: "/apple-splash-2048-2732.jpg",
+          media:
+            "(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)",
         },
       ],
     },
@@ -81,6 +124,45 @@ export default defineNuxtConfig({
     },
     devOptions: {
       enabled: true,
+    },
+    // 💥 OFFLINE desteği için ekliyoruz:
+    workbox: {
+      runtimeCaching: [
+        {
+          urlPattern: /^https:\/\/table-to-card-viewer\.netlify\.app\/.*$/, // kendi domainin → REGEX dikkat!
+          handler: "CacheFirst",
+          options: {
+            cacheName: "pages-cache",
+            expiration: {
+              maxEntries: 50,
+              maxAgeSeconds: 60 * 60 * 24 * 7, // 7 gün
+            },
+          },
+        },
+        {
+          urlPattern: /\.(?:js|css|woff2?)$/,
+          handler: "CacheFirst",
+          options: {
+            cacheName: "static-resources",
+            expiration: {
+              maxEntries: 50,
+              maxAgeSeconds: 60 * 60 * 24 * 30, // 30 gün
+            },
+          },
+        },
+        {
+          urlPattern: /\.(?:png|jpg|jpeg|svg|gif|ico)$/,
+          handler: "CacheFirst",
+          options: {
+            cacheName: "image-cache",
+            expiration: {
+              maxEntries: 100,
+              maxAgeSeconds: 60 * 60 * 24 * 30, // 30 gün
+            },
+          },
+        },
+      ],
+      navigateFallback: "/offline.html", // 👈 Offline fallback sayfası (bir tane koyacağız)
     },
   },
 });

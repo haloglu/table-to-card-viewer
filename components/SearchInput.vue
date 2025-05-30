@@ -29,8 +29,9 @@ function clearSearch() {
 
 <style scoped>
 .search-box {
+  flex: 1;
+  min-width: 0;
   position: relative;
-  width: 100%;
 }
 
 .search-icon {

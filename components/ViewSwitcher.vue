@@ -10,26 +10,19 @@
               @click="showFilter = !showFilter"
               title="Filtrele"
             />
-
             <transition name="fade">
               <div v-if="showFilter" class="custom-dropdown">
-                <ul>
-                  <li
-                    v-for="option in ['', 'Aktif', 'Pasif']"
-                    :key="option"
-                    :class="{ active: selectedStatus === option }"
-                    @click="selectFilter(option)"
-                  >
-                    {{ option || "Hepsi" }}
-                  </li>
-                </ul>
+                <!-- dropdown -->
               </div>
             </transition>
           </div>
 
           <SearchInput @update:search="searchQuery = $event" />
+
+          <div class="toggle-wrapper">
+            <ToggleSwitch v-model="isCardView" />
+          </div>
         </div>
-        <ToggleSwitch v-if="!isMobile" v-model="isCardView" />
       </div>
 
       <Transition name="fade" mode="out-in">
@@ -277,16 +270,38 @@ body.dark .loading-icon {
 }
 
 .filter-toggle-wrapper {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 20px;
-  flex-wrap: wrap;
-  gap: 12px;
 }
 
 .filter-wrapper {
   position: relative;
+}
+
+.toggle-mobile-fix {
+  visibility: hidden; // başlangıçta gizle
+  opacity: 0;
+  transition: opacity 0.3s ease;
+
+  margin: 0;
+  align-self: center;
+  transform: scale(0.9);
+  cursor: pointer;
+
+  @media (min-width: 769px) {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  @media (max-width: 768px) {
+    visibility: visible;
+    opacity: 1;
+    transform: scale(0.9);
+    margin: 12px 0 0 0;
+    align-self: flex-start;
+    position: sticky;
+    top: 12px;
+    z-index: 10;
+  }
 }
 
 .filter-icon-only {
@@ -304,20 +319,30 @@ body.dark .loading-icon {
 }
 
 .filter-search-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 12px;
-  flex-grow: 1;
-}
-
-.filter-wrapper {
-  flex-shrink: 0;
 }
 
 .search-box {
-  max-width: 280px;
-  width: 100%;
+  flex: 1;
+  min-width: 0;
+  position: relative;
 }
+
+.toggle-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 32px;
+}
+
+// .search-box {
+//   max-width: 280px;
+//   width: 100%;
+// }
 
 .custom-dropdown {
   position: absolute;
@@ -403,6 +428,7 @@ body.dark .loading-icon {
   border-radius: 8px;
   box-sizing: border-box;
   -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
 
   &::-webkit-scrollbar {
     height: 8px;
@@ -413,7 +439,7 @@ body.dark .loading-icon {
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: #bbb; // ✅ Light mode için daha açık ton
+    background-color: #bbb;
     border-radius: 9999px;
     cursor: pointer;
   }
@@ -544,17 +570,6 @@ body.dark {
 
   .card-grid {
     grid-template-columns: 1fr;
-  }
-
-  .data-table,
-  .table-wrapper {
-    display: none;
-  }
-
-  .filter-toggle-wrapper {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
   }
 
   .custom-dropdown {
