@@ -13,25 +13,101 @@
             <transition name="fade">
               <div v-if="showFilter" class="custom-dropdown">
                 <ul>
+                  <!-- ✅ DURUM -->
                   <li
-                    :class="{ active: selectedStatus === '' }"
-                    @click="selectFilter('')"
+                    class="dropdown-section-title"
+                    @click="toggleSection('status')"
                   >
-                    Hepsi
+                    Durum
                   </li>
+                  <template v-if="openSection === 'status'">
+                    <li
+                      class="dropdown-sub-item"
+                      :class="{ active: pendingSelectedStatus === '' }"
+                      @click="selectPendingFilter('')"
+                    >
+                      Hepsi
+                    </li>
+                    <li
+                      class="dropdown-sub-item"
+                      :class="{ active: pendingSelectedStatus === 'Aktif' }"
+                      @click="selectPendingFilter('Aktif')"
+                    >
+                      Aktif
+                    </li>
+                    <li
+                      class="dropdown-sub-item"
+                      :class="{ active: pendingSelectedStatus === 'Pasif' }"
+                      @click="selectPendingFilter('Pasif')"
+                    >
+                      Pasif
+                    </li>
+                  </template>
+
+                  <hr />
+
+                  <!-- ✅ SIRALAMA -->
                   <li
-                    :class="{ active: selectedStatus === 'Aktif' }"
-                    @click="selectFilter('Aktif')"
+                    class="dropdown-section-title"
+                    @click="toggleSection('sort')"
                   >
-                    Aktif
+                    Sıralama
                   </li>
-                  <li
-                    :class="{ active: selectedStatus === 'Pasif' }"
-                    @click="selectFilter('Pasif')"
-                  >
-                    Pasif
-                  </li>
+                  <template v-if="openSection === 'sort'">
+                    <li
+                      class="dropdown-sub-item"
+                      :class="{
+                        active:
+                          pendingSortKey === 'title' &&
+                          pendingSortOrder === 'asc',
+                      }"
+                      @click="selectPendingSort('title', 'asc')"
+                    >
+                      İsim A-Z
+                    </li>
+                    <li
+                      class="dropdown-sub-item"
+                      :class="{
+                        active:
+                          pendingSortKey === 'title' &&
+                          pendingSortOrder === 'desc',
+                      }"
+                      @click="selectPendingSort('title', 'desc')"
+                    >
+                      İsim Z-A
+                    </li>
+                    <li
+                      class="dropdown-sub-item"
+                      :class="{
+                        active:
+                          pendingSortKey === 'joinedAt' &&
+                          pendingSortOrder === 'desc',
+                      }"
+                      @click="selectPendingSort('joinedAt', 'desc')"
+                    >
+                      En Yeni Önce
+                    </li>
+                    <li
+                      class="dropdown-sub-item"
+                      :class="{
+                        active:
+                          pendingSortKey === 'joinedAt' &&
+                          pendingSortOrder === 'asc',
+                      }"
+                      @click="selectPendingSort('joinedAt', 'asc')"
+                    >
+                      En Eski Önce
+                    </li>
+                  </template>
                 </ul>
+
+                <!-- ✅ Resetle / Uygula Butonları -->
+                <div class="dropdown-actions">
+                  <button @click="applyFilters" class="apply-btn">
+                    Uygula
+                  </button>
+                  <button @click="resetFilters">Resetle</button>
+                </div>
               </div>
             </transition>
           </div>
@@ -114,11 +190,23 @@ import TableRow from "~/components/TableRow.vue";
 import SearchInput from "~/components/SearchInput.vue";
 
 const searchQuery = ref("");
-
 const isCardView = ref(true);
-
 const isLoading = ref(false);
 
+// Uygulanmış filtre değerleri
+const selectedStatus = ref("");
+const sortKey = ref("");
+const sortOrder = ref("asc");
+
+// Geçici (pending) değerler
+const pendingSelectedStatus = ref(selectedStatus.value);
+const pendingSortKey = ref(sortKey.value);
+const pendingSortOrder = ref(sortOrder.value);
+
+const showFilter = ref(false);
+const openSection = ref(""); // '' | 'status' | 'sort'
+
+// Demo item listesi
 const items = [
   {
     id: 1,
@@ -182,16 +270,49 @@ const items = [
   },
 ];
 
-function selectFilter(option) {
-  selectedStatus.value = option;
-  showFilter.value = false;
+// Section aç/kapat
+function toggleSection(section) {
+  openSection.value = openSection.value === section ? "" : section;
 }
 
-const selectedStatus = ref("");
-const showFilter = ref(false);
+// Pending filtre seçimi (Durum)
+function selectPendingFilter(option) {
+  pendingSelectedStatus.value = option;
+}
 
+// Pending sıralama seçimi (Sıralama)
+function selectPendingSort(key, order = "asc") {
+  pendingSortKey.value = key;
+  pendingSortOrder.value = order;
+}
+
+// Uygula → Pending değerleri kaydet
+function applyFilters() {
+  selectedStatus.value = pendingSelectedStatus.value;
+  sortKey.value = pendingSortKey.value;
+  sortOrder.value = pendingSortOrder.value;
+
+  showFilter.value = false;
+  openSection.value = "";
+}
+
+// Resetle → Hem pending hem selected sıfırla
+function resetFilters() {
+  selectedStatus.value = "";
+  sortKey.value = "";
+  sortOrder.value = "asc";
+
+  pendingSelectedStatus.value = "";
+  pendingSortKey.value = "";
+  pendingSortOrder.value = "asc";
+
+  showFilter.value = false;
+  openSection.value = "";
+}
+
+// Loading izleme
 let timeout;
-watch([searchQuery, selectedStatus], () => {
+watch([searchQuery, selectedStatus, sortKey, sortOrder], () => {
   clearTimeout(timeout);
   isLoading.value = true;
   timeout = setTimeout(() => {
@@ -199,13 +320,16 @@ watch([searchQuery, selectedStatus], () => {
   }, 800);
 });
 
+// Filtrelenmiş ve sıralanmış data
 const filteredItems = computed(() => {
   let result = items;
 
+  // Status filtre
   if (selectedStatus.value) {
     result = result.filter((item) => item.status === selectedStatus.value);
   }
 
+  // Search filtre
   if (searchQuery.value.trim() !== "") {
     const q = searchQuery.value.toLowerCase();
     result = result.filter(
@@ -218,9 +342,22 @@ const filteredItems = computed(() => {
     );
   }
 
+  // Sıralama
+  if (sortKey.value) {
+    result = [...result].sort((a, b) => {
+      const aVal = a[sortKey.value];
+      const bVal = b[sortKey.value];
+
+      if (aVal < bVal) return sortOrder.value === "asc" ? -1 : 1;
+      if (aVal > bVal) return sortOrder.value === "asc" ? 1 : -1;
+      return 0;
+    });
+  }
+
   return result;
 });
 
+// Mobil görünüm toggle
 const isMobile = ref(false);
 
 const checkIsMobile = () => {
@@ -367,17 +504,16 @@ body.dark .loading-icon {
   position: absolute;
   top: 38px;
   left: 0;
-  min-width: 100px;
+  min-width: 160px;
   background: #ffffff;
   border: 1px solid #d1d5db;
   border-radius: 8px;
   padding: 6px 0;
-  list-style: none;
   z-index: 50;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 
   ul {
-    list-style: none; // 🔥 Bu satır noktalardan kurtarır
+    list-style: none;
     margin: 0;
     padding: 0;
 
@@ -399,6 +535,29 @@ body.dark .loading-icon {
       &.active {
         background-color: #2563eb;
         color: #ffffff;
+      }
+
+      // ✅ ALT SEÇENEK için özel stil (biraz içeri girsin + farklı arkaplan)
+      &.dropdown-sub-item {
+        padding-left: 20px; // Biraz içeri girinti
+        background-color: #f9fafb; // Light mode
+
+        body.dark & {
+          background-color: #1f1f1f;
+        }
+
+        &:hover {
+          background-color: #f3f4f6; // hover light
+
+          body.dark & {
+            background-color: #2a2a2a;
+          }
+        }
+
+        &.active {
+          background-color: #2563eb;
+          color: #ffffff;
+        }
       }
     }
   }
@@ -578,6 +737,76 @@ body.dark {
 
   .empty-message {
     color: #ddd;
+  }
+}
+
+.dropdown-section-title {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  cursor: default;
+  user-select: none;
+}
+
+body.dark .dropdown-section-title {
+  color: #999;
+}
+
+.dropdown-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px; // ARAYA BOŞLUK
+  padding: 8px 12px;
+  border-top: 1px solid #d1d5db;
+  margin-top: 6px;
+
+  button {
+    flex: 1; // Butonlar eşit genişlikte olsun istersen
+    padding: 6px 12px;
+    font-size: 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background-color: #e5e7eb;
+    color: #374151;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: #d1d5db;
+    }
+  }
+
+  .apply-btn {
+    background-color: #2563eb; // MAVİ
+    color: #fff;
+
+    &:hover {
+      background-color: darken(#2563eb, 5%);
+    }
+  }
+}
+
+body.dark .dropdown-actions {
+  border-color: #444;
+
+  button {
+    background-color: #3a3a3a;
+    color: #f3f3f3;
+
+    &:hover {
+      background-color: #555;
+    }
+  }
+
+  .apply-btn {
+    background-color: #2563eb;
+    color: #fff;
+
+    &:hover {
+      background-color: darken(#2563eb, 5%);
+    }
   }
 }
 
