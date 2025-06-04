@@ -43,6 +43,7 @@ A responsive and reusable **Vue 3 + Nuxt 3** component that toggles between **ta
 npm install
 npm run dev
 
+```
 
 ## 🚧 Coming Soon
 
@@ -53,5 +54,3 @@ npm run dev
 ## 👨‍💻 Author
 
 Created by [@haloglu](https://github.com/haloglu) with ☕ & ❤️
-
-```
