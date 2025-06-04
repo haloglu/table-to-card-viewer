@@ -10,6 +10,8 @@ import {
   faSearch,
   faXmark,
   faSpinner,
+  faAngleLeft,
+  faAngleRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
@@ -24,7 +26,9 @@ library.add(
   faFilter,
   faSearch,
   faXmark,
-  faSpinner
+  faSpinner,
+  faAngleLeft,
+  faAngleRight
 );
 
 export default defineNuxtPlugin((nuxtApp) => {

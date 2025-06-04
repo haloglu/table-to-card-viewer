@@ -121,7 +121,7 @@
       </div>
 
       <Transition name="fade" mode="out-in">
-        <div>
+        <div :key="currentPage">
           <div v-if="isLoading" class="loading-wrapper">
             <font-awesome-icon
               :icon="['fas', 'spinner']"
@@ -135,7 +135,7 @@
             class="card-grid"
           >
             <CardItem
-              v-for="item in filteredItems"
+              v-for="item in paginatedItems"
               :key="item.id"
               v-bind="item"
             />
@@ -159,7 +159,7 @@
               </thead>
               <tbody>
                 <TableRow
-                  v-for="item in filteredItems"
+                  v-for="item in paginatedItems"
                   :key="item.id"
                   v-bind="item"
                 />
@@ -178,6 +178,40 @@
           </div>
         </div>
       </Transition>
+
+      <!-- Pagination -->
+      <div v-if="totalPages > 1" class="pagination">
+        <!-- Sol ok -->
+        <button
+          class="pagination-btn"
+          :disabled="currentPage === 1"
+          @click="goToPage(currentPage - 1)"
+          title="Önceki Sayfa"
+        >
+          <font-awesome-icon :icon="['fas', 'angle-left']" />
+        </button>
+
+        <!-- Sayfa input -->
+        <input
+          type="number"
+          class="pagination-input"
+          v-model.number="currentPage"
+          :min="1"
+          :max="totalPages"
+          @change="validatePage"
+        />
+        <span class="pagination-total">/ {{ totalPages }}</span>
+
+        <!-- Sağ ok -->
+        <button
+          class="pagination-btn"
+          :disabled="currentPage === totalPages"
+          @click="goToPage(currentPage + 1)"
+          title="Sonraki Sayfa"
+        >
+          <font-awesome-icon :icon="['fas', 'angle-right']" />
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -192,6 +226,9 @@ import SearchInput from "~/components/SearchInput.vue";
 const searchQuery = ref("");
 const isCardView = ref(true);
 const isLoading = ref(false);
+
+const currentPage = ref(1);
+const pageSize = ref(6);
 
 // Uygulanmış filtre değerleri
 const selectedStatus = ref("");
@@ -267,6 +304,66 @@ const items = [
     joinedAt: "2021-09-17",
     role: "Infrastructure",
     status: "Aktif",
+  },
+  {
+    id: 7,
+    title: "Zeynep Kılıç",
+    description: "Marketing Specialist",
+    email: "zeynep.kilic@company.com",
+    location: "İstanbul, Türkiye",
+    joinedAt: "2020-05-12",
+    role: "Marketing",
+    status: "Aktif",
+  },
+  {
+    id: 8,
+    title: "Ahmet Arslan",
+    description: "Data Analyst",
+    email: "ahmet.arslan@company.com",
+    location: "Ankara, Türkiye",
+    joinedAt: "2021-11-09",
+    role: "Data",
+    status: "Pasif",
+  },
+  {
+    id: 9,
+    title: "Maria Rossi",
+    description: "HR Specialist",
+    email: "maria.rossi@company.com",
+    location: "Rome, Italy",
+    joinedAt: "2020-02-17",
+    role: "HR",
+    status: "Aktif",
+  },
+  {
+    id: 10,
+    title: "Kenan Duman",
+    description: "System Administrator",
+    email: "kenan.duman@company.com",
+    location: "İzmir, Türkiye",
+    joinedAt: "2018-12-03",
+    role: "IT",
+    status: "Pasif",
+  },
+  {
+    id: 11,
+    title: "Emily Clark",
+    description: "UX Designer",
+    email: "emily.clark@company.com",
+    location: "London, UK",
+    joinedAt: "2022-04-22",
+    role: "Designer",
+    status: "Aktif",
+  },
+  {
+    id: 12,
+    title: "Mustafa Yıldız",
+    description: "Fullstack Developer",
+    email: "mustafa.yildiz@company.com",
+    location: "Antalya, Türkiye",
+    joinedAt: "2021-07-14",
+    role: "Developer",
+    status: "Pasif",
   },
 ];
 
@@ -356,6 +453,28 @@ const filteredItems = computed(() => {
 
   return result;
 });
+
+const totalPages = computed(() => {
+  return Math.ceil(filteredItems.value.length / pageSize.value);
+});
+
+const paginatedItems = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value;
+  const end = start + pageSize.value;
+  return filteredItems.value.slice(start, end);
+});
+
+function goToPage(page) {
+  if (page < 1) page = 1;
+  if (page > totalPages.value) page = totalPages.value;
+  currentPage.value = page;
+}
+
+function validatePage() {
+  if (currentPage.value < 1) currentPage.value = 1;
+  if (currentPage.value > totalPages.value)
+    currentPage.value = totalPages.value;
+}
 
 // Mobil görünüm toggle
 const isMobile = ref(false);
@@ -806,6 +925,102 @@ body.dark .dropdown-actions {
 
     &:hover {
       background-color: darken(#2563eb, 5%);
+    }
+  }
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+
+  .pagination-btn {
+    background-color: #e5e7eb;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #374151;
+    transition: background-color 0.2s;
+
+    &:hover:not(:disabled) {
+      background-color: #d1d5db;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  .pagination-input {
+    width: 48px;
+    padding: 6px 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    text-align: center;
+    font-size: 14px;
+    color: #374151;
+    background-color: #f9fafb;
+    transition: background-color 0.2s, border-color 0.2s;
+
+    &:focus {
+      outline: none;
+      border-color: #2563eb;
+    }
+
+    // Number input arrows kaldır
+    -moz-appearance: textfield;
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  }
+
+  .pagination-total {
+    font-size: 14px;
+    color: #374151;
+  }
+}
+
+/* 🌙 Dark mode */
+body.dark {
+  .pagination {
+    .pagination-btn {
+      background-color: #2c2c2c;
+      color: #f3f3f3;
+
+      &:hover:not(:disabled) {
+        background-color: #3a3a3a;
+      }
+    }
+
+    .pagination-input {
+      background-color: #2c2c2c;
+      color: #f3f3f3;
+      border-color: #444;
+
+      &:focus {
+        border-color: #2563eb;
+      }
+
+      // Number input arrows kaldır
+      -moz-appearance: textfield;
+
+      &::-webkit-inner-spin-button,
+      &::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+    }
+
+    .pagination-total {
+      color: #ccc;
     }
   }
 }
