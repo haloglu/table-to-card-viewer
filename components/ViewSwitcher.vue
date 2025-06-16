@@ -25,7 +25,12 @@
           </div>
         </div>
       </div>
-
+      <!-- ✅ Toplam sonuç sayısı -->
+      <p class="result-count">
+        Bu sayfada
+        <span class="highlight-text"> {{ paginatedItems.length }}</span> sonuç
+        görüntüleniyor
+      </p>
       <!-- Loading ayrı -->
       <div v-if="isLoading" class="loading-wrapper">
         <font-awesome-icon
@@ -434,6 +439,7 @@ body.dark .loading-icon {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 20px;
+  margin-top: 1px;
   overflow-x: hidden;
 }
 

@@ -40,3 +40,30 @@ body {
     }
   }
 }
+
+.result-count {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  text-align: center;
+  margin: 4px 0 0px; // ✅ updated
+  line-height: 1.6;
+
+  .highlight-text {
+    color: #2563eb;
+    font-weight: 600;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 13px;
+    margin: 6px 0 10px;
+  }
+}
+
+body.dark .result-count {
+  color: #a1a1aa;
+
+  .highlight-text {
+    color: #60a5fa; // ✅ Açık mavi ton (Tailwind blue-400 gibi)
+  }
+}
