@@ -25,12 +25,7 @@
           </div>
         </div>
       </div>
-      <!-- ✅ Toplam sonuç sayısı -->
-      <p class="result-count">
-        Bu sayfada
-        <span class="highlight-text"> {{ paginatedItems.length }}</span> sonuç
-        görüntüleniyor
-      </p>
+
       <!-- Loading ayrı -->
       <div v-if="isLoading" class="loading-wrapper">
         <font-awesome-icon
@@ -95,12 +90,24 @@
         </component>
       </Transition>
 
-      <!-- Pagination -->
-      <Pagination
-        :currentPage="currentPage"
-        :totalPages="totalPages"
-        @pageChange="goToPage"
-      />
+      <!-- Pagination ve Sonuç Sayısı -->
+      <div class="pagination-footer">
+        <span class="result-count">
+          Toplam
+          <span
+            ><b>{{ filteredItems.length }}</b></span
+          >
+          sonuçtan
+          <span class="highlight-text">{{ paginatedItems.length }}</span> tanesi
+          gösteriliyor.
+        </span>
+
+        <Pagination
+          :currentPage="currentPage"
+          :totalPages="totalPages"
+          @pageChange="goToPage"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -600,5 +607,44 @@ body.dark .empty-message {
 .fade-leave-to {
   opacity: 0;
   transform: scale(0.95);
+}
+
+.pagination-footer {
+  margin-top: 16px;
+  padding: 12px 0;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+
+  .result-count {
+    font-size: 14px;
+    color: #6b7280;
+
+    .highlight-text {
+      color: #2563eb;
+      font-weight: 600;
+    }
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+  }
+}
+
+body.dark .pagination-footer {
+  border-top: 1px solid #2e2e2e;
+
+  .result-count {
+    color: #a1a1aa;
+
+    .highlight-text {
+      color: #60a5fa;
+    }
+  }
 }
 </style>
