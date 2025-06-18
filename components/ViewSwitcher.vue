@@ -91,7 +91,7 @@
       </Transition>
 
       <!-- Pagination ve Sonuç Sayısı -->
-      <div class="pagination-footer">
+      <div class="pagination-footer" v-if="!isLoading">
         <span class="result-count">
           Toplam
           <span
@@ -114,6 +114,8 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount, computed, watch } from "vue";
+import { db } from "../src/utils/firebase";
+import { collection, query, orderBy, getDocs } from "firebase/firestore";
 import ToggleSwitch from "~/components/ToggleSwitch.vue";
 import CardItem from "~/components/CardItem.vue";
 import TableRow from "~/components/TableRow.vue";
@@ -121,10 +123,22 @@ import SearchInput from "~/components/SearchInput.vue";
 import FilterDropdown from "~/components/FilterDropdown.vue";
 import Pagination from "~/components/Pagination.vue";
 
+// 🔥 Firebase'den veri çekiyoruz
+const users = ref([]);
+const isLoading = ref(true);
+
+onMounted(async () => {
+  const q = query(collection(db, "users"), orderBy("id"));
+  const snapshot = await getDocs(q);
+  users.value = snapshot.docs.map((doc) => ({
+    id: doc.data().id,
+    ...doc.data(),
+  }));
+  isLoading.value = false;
+});
+
 const searchQuery = ref("");
 const isCardView = ref(true);
-const isLoading = ref(false);
-
 const currentPage = ref(1);
 const pageSize = ref(6);
 
@@ -142,129 +156,128 @@ const showFilter = ref(false);
 const openSection = ref(""); // '' | 'status' | 'sort'
 
 // Demo item listesi
-// Demo item listesi
-const items = [
-  {
-    id: 1,
-    title: "Sertaç Can Haloğlu",
-    description: "Frontend Developer",
-    email: "sertac@company.com",
-    location: "İstanbul, Türkiye",
-    joinedAt: "2021-03-01",
-    role: "Admin",
-    status: "Aktif",
-  },
-  {
-    id: 2,
-    title: "Ali Veli",
-    description: "Backend Developer",
-    email: "ali.veli@company.com",
-    location: "Ankara, Türkiye",
-    joinedAt: "2022-06-15",
-    role: "Staff",
-    status: "Pasif",
-  },
-  {
-    id: 3,
-    title: "Ayşe Yılmaz",
-    description: "UI Designer",
-    email: "ayse@company.com",
-    location: "İzmir, Türkiye",
-    joinedAt: "2020-11-22",
-    role: "Designer",
-    status: "Aktif",
-  },
-  {
-    id: 4,
-    title: "John Doe",
-    description: "Product Manager",
-    email: "john.doe@company.com",
-    location: "New York, USA",
-    joinedAt: "2019-08-10",
-    role: "Manager",
-    status: "Aktif",
-  },
-  {
-    id: 5,
-    title: "Elif Demir",
-    description: "QA Engineer",
-    email: "elif.demir@company.com",
-    location: "Bursa, Türkiye",
-    joinedAt: "2023-01-05",
-    role: "Staff",
-    status: "Pasif",
-  },
-  {
-    id: 6,
-    title: "Mehmet Koç",
-    description: "DevOps Engineer",
-    email: "mehmet.koc@company.com",
-    location: "Berlin, Almanya",
-    joinedAt: "2021-09-17",
-    role: "Infrastructure",
-    status: "Aktif",
-  },
-  {
-    id: 7,
-    title: "Zeynep Kılıç",
-    description: "Marketing Specialist",
-    email: "zeynep.kilic@company.com",
-    location: "İstanbul, Türkiye",
-    joinedAt: "2020-05-12",
-    role: "Marketing",
-    status: "Aktif",
-  },
-  {
-    id: 8,
-    title: "Ahmet Arslan",
-    description: "Data Analyst",
-    email: "ahmet.arslan@company.com",
-    location: "Ankara, Türkiye",
-    joinedAt: "2021-11-09",
-    role: "Data",
-    status: "Pasif",
-  },
-  {
-    id: 9,
-    title: "Maria Rossi",
-    description: "HR Specialist",
-    email: "maria.rossi@company.com",
-    location: "Rome, Italy",
-    joinedAt: "2020-02-17",
-    role: "HR",
-    status: "Aktif",
-  },
-  {
-    id: 10,
-    title: "Kenan Duman",
-    description: "System Administrator",
-    email: "kenan.duman@company.com",
-    location: "İzmir, Türkiye",
-    joinedAt: "2018-12-03",
-    role: "IT",
-    status: "Pasif",
-  },
-  {
-    id: 11,
-    title: "Emily Clark",
-    description: "UX Designer",
-    email: "emily.clark@company.com",
-    location: "London, UK",
-    joinedAt: "2022-04-22",
-    role: "Designer",
-    status: "Aktif",
-  },
-  {
-    id: 12,
-    title: "Mustafa Yıldız",
-    description: "Fullstack Developer",
-    email: "mustafa.yildiz@company.com",
-    location: "Antalya, Türkiye",
-    joinedAt: "2021-07-14",
-    role: "Developer",
-    status: "Pasif",
-  },
-];
+// const items = [
+//   {
+//     id: 1,
+//     title: "Sertaç Can Haloğlu",
+//     description: "Frontend Developer",
+//     email: "sertac@company.com",
+//     location: "İstanbul, Türkiye",
+//     joinedAt: "2021-03-01",
+//     role: "Admin",
+//     status: "Aktif",
+//   },
+//   {
+//     id: 2,
+//     title: "Ali Veli",
+//     description: "Backend Developer",
+//     email: "ali.veli@company.com",
+//     location: "Ankara, Türkiye",
+//     joinedAt: "2022-06-15",
+//     role: "Staff",
+//     status: "Pasif",
+//   },
+//   {
+//     id: 3,
+//     title: "Ayşe Yılmaz",
+//     description: "UI Designer",
+//     email: "ayse@company.com",
+//     location: "İzmir, Türkiye",
+//     joinedAt: "2020-11-22",
+//     role: "Designer",
+//     status: "Aktif",
+//   },
+//   {
+//     id: 4,
+//     title: "John Doe",
+//     description: "Product Manager",
+//     email: "john.doe@company.com",
+//     location: "New York, USA",
+//     joinedAt: "2019-08-10",
+//     role: "Manager",
+//     status: "Aktif",
+//   },
+//   {
+//     id: 5,
+//     title: "Elif Demir",
+//     description: "QA Engineer",
+//     email: "elif.demir@company.com",
+//     location: "Bursa, Türkiye",
+//     joinedAt: "2023-01-05",
+//     role: "Staff",
+//     status: "Pasif",
+//   },
+//   {
+//     id: 6,
+//     title: "Mehmet Koç",
+//     description: "DevOps Engineer",
+//     email: "mehmet.koc@company.com",
+//     location: "Berlin, Almanya",
+//     joinedAt: "2021-09-17",
+//     role: "Infrastructure",
+//     status: "Aktif",
+//   },
+//   {
+//     id: 7,
+//     title: "Zeynep Kılıç",
+//     description: "Marketing Specialist",
+//     email: "zeynep.kilic@company.com",
+//     location: "İstanbul, Türkiye",
+//     joinedAt: "2020-05-12",
+//     role: "Marketing",
+//     status: "Aktif",
+//   },
+//   {
+//     id: 8,
+//     title: "Ahmet Arslan",
+//     description: "Data Analyst",
+//     email: "ahmet.arslan@company.com",
+//     location: "Ankara, Türkiye",
+//     joinedAt: "2021-11-09",
+//     role: "Data",
+//     status: "Pasif",
+//   },
+//   {
+//     id: 9,
+//     title: "Maria Rossi",
+//     description: "HR Specialist",
+//     email: "maria.rossi@company.com",
+//     location: "Rome, Italy",
+//     joinedAt: "2020-02-17",
+//     role: "HR",
+//     status: "Aktif",
+//   },
+//   {
+//     id: 10,
+//     title: "Kenan Duman",
+//     description: "System Administrator",
+//     email: "kenan.duman@company.com",
+//     location: "İzmir, Türkiye",
+//     joinedAt: "2018-12-03",
+//     role: "IT",
+//     status: "Pasif",
+//   },
+//   {
+//     id: 11,
+//     title: "Emily Clark",
+//     description: "UX Designer",
+//     email: "emily.clark@company.com",
+//     location: "London, UK",
+//     joinedAt: "2022-04-22",
+//     role: "Designer",
+//     status: "Aktif",
+//   },
+//   {
+//     id: 12,
+//     title: "Mustafa Yıldız",
+//     description: "Fullstack Developer",
+//     email: "mustafa.yildiz@company.com",
+//     location: "Antalya, Türkiye",
+//     joinedAt: "2021-07-14",
+//     role: "Developer",
+//     status: "Pasif",
+//   },
+// ];
 
 // ✅ Uygula → Pending değerleri kaydet
 function applyFilters() {
@@ -288,6 +301,8 @@ function resetFilters() {
 
   showFilter.value = false;
   openSection.value = "";
+
+  currentPage.value = 1;
 }
 
 // Loading izleme
@@ -302,7 +317,7 @@ watch([searchQuery, selectedStatus, sortKey, sortOrder], () => {
 
 // Filtrelenmiş ve sıralanmış data
 const filteredItems = computed(() => {
-  let result = items;
+  let result = users.value;
 
   if (selectedStatus.value) {
     result = result.filter((item) => item.status === selectedStatus.value);
@@ -331,7 +346,13 @@ const filteredItems = computed(() => {
     });
   }
 
+  if (!users.value.length) return [];
+
   return result;
+});
+
+watch(filteredItems, (val) => {
+  console.log("Filtered items:", val);
 });
 
 const totalPages = computed(() => {

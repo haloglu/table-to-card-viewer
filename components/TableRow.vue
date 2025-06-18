@@ -3,9 +3,15 @@
   <tr>
     <td class="user-cell">
       <div class="avatar" :style="{ backgroundColor: getColor(title) }">
-        {{ getInitials(title) }}
+        <template v-if="title && title.trim()">
+          {{ getInitials(title) }}
+        </template>
+        <template v-else>
+          <font-awesome-icon icon="user" />
+        </template>
       </div>
-      <span class="user-name">{{ title }}</span>
+
+      <span class="user-name" v-if="title && title.trim()">{{ title }}</span>
     </td>
     <td>{{ description }}</td>
     <td>{{ email }}</td>
@@ -21,15 +27,17 @@
 </template>
 
 <script setup>
-defineProps([
-  "title",
-  "description",
-  "email",
-  "location",
-  "joinedAt",
-  "role",
-  "status",
-]);
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+
+defineProps({
+  title: String,
+  description: String,
+  email: String,
+  location: String,
+  joinedAt: String,
+  role: String,
+  status: String,
+});
 
 const getInitials = (name) => {
   const words = name.trim().split(" ");

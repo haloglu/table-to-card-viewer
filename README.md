@@ -15,6 +15,7 @@ A responsive and reusable **Vue 3 + Nuxt 3** component that toggles between **ta
 - 📄 **Pagination with modern controls & input**
 - ⚙️ Built with Nuxt 3
 - ⚡️ **PWA-ready** with offline support & splash screen
+- ☁️ Live data from Firebase Firestore
 
 ## 🚀 Live Demo
 
@@ -28,6 +29,14 @@ A responsive and reusable **Vue 3 + Nuxt 3** component that toggles between **ta
 - ✅ **Pagination** with icons + editable input + transition
 - ✅ Fixed iOS horizontal scroll issue on table view
 - ✅ Scrollbar color adapted for both dark & light mode
+- ✅ Connected to Firebase Firestore for dynamic data loading
+
+## 🔥 Firebase Integration
+
+- 🔌 Configured Firebase via `src/utils/firebase.js`
+- 🔎 Fetched user data from Firestore in `ViewSwitcher.vue`
+- 🛡️ Applied read-only Firestore rules for public access
+- 📦 No backend needed – data fully hosted on Firebase
 
 ## 📦 Project Structure
 
@@ -35,6 +44,7 @@ A responsive and reusable **Vue 3 + Nuxt 3** component that toggles between **ta
 - `/assets/scss` – Global + modular SCSS styles
 - `/pages` – View container (switcher layout)
 - `/public` – PWA icons and static files
+- `/src/utils` – Firebase configuration & shared utilities
 - `nuxt.config.ts` – Nuxt & PWA configuration
 
 ## 🛠 Setup
@@ -47,7 +57,6 @@ npm run dev
 
 ## 🚧 Coming Soon
 
-- 🛰️ **Dynamic data from API**
 - ⚙️ **Additional table actions** (`edit` / `delete`)
 - 🖼️ **Empty states with illustrations**
 
