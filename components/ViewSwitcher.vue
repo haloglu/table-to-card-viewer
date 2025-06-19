@@ -3,20 +3,7 @@
     <div class="view-box">
       <div class="filter-toggle-wrapper">
         <div class="filter-search-row">
-          <FilterDropdown
-            :pendingSelectedStatus="pendingSelectedStatus"
-            :pendingSortKey="pendingSortKey"
-            :pendingSortOrder="pendingSortOrder"
-            :showFilter="showFilter"
-            :openSection="openSection"
-            @update:pendingSelectedStatus="pendingSelectedStatus = $event"
-            @update:pendingSortKey="pendingSortKey = $event"
-            @update:pendingSortOrder="pendingSortOrder = $event"
-            @update:showFilter="showFilter = $event"
-            @update:openSection="openSection = $event"
-            @apply-filters="applyFilters"
-            @reset-filters="resetFilters"
-          />
+          <PageSizeSelector v-model="pageSize" />
 
           <SearchInput @update:search="searchQuery = $event" />
 
@@ -44,11 +31,13 @@
         >
           <!-- Card View -->
           <template v-if="filteredItems.length > 0 && isCardView">
-            <CardItem
-              v-for="item in paginatedItems"
-              :key="item.id"
-              v-bind="item"
-            />
+            <TransitionGroup name="fade" class="card-grid">
+              <CardItem
+                v-for="item in paginatedItems"
+                :key="item.id"
+                v-bind="item"
+              />
+            </TransitionGroup>
           </template>
 
           <!-- Table View -->
@@ -66,11 +55,11 @@
                 </tr>
               </thead>
               <tbody>
-                <TableRow
-                  v-for="item in paginatedItems"
-                  :key="item.id"
-                  v-bind="item"
-                />
+                <template v-for="item in paginatedItems" :key="item.id">
+                  <transition name="fade" tag>
+                    <TableRow v-bind="item" />
+                  </transition>
+                </template>
               </tbody>
             </table>
           </template>
@@ -120,7 +109,7 @@ import ToggleSwitch from "~/components/ToggleSwitch.vue";
 import CardItem from "~/components/CardItem.vue";
 import TableRow from "~/components/TableRow.vue";
 import SearchInput from "~/components/SearchInput.vue";
-import FilterDropdown from "~/components/FilterDropdown.vue";
+import PageSizeSelector from "~/components/PageSizeSelector.vue";
 import Pagination from "~/components/Pagination.vue";
 
 // 🔥 Firebase'den veri çekiyoruz
@@ -142,186 +131,18 @@ const isCardView = ref(true);
 const currentPage = ref(1);
 const pageSize = ref(6);
 
-// Uygulanmış filtre değerleri
-const selectedStatus = ref("");
-const sortKey = ref("");
-const sortOrder = ref("asc");
-
-// Geçici (pending) değerler
-const pendingSelectedStatus = ref(selectedStatus.value);
-const pendingSortKey = ref(sortKey.value);
-const pendingSortOrder = ref(sortOrder.value);
-
-const showFilter = ref(false);
-const openSection = ref(""); // '' | 'status' | 'sort'
-
-// Demo item listesi
-// const items = [
-//   {
-//     id: 1,
-//     title: "Sertaç Can Haloğlu",
-//     description: "Frontend Developer",
-//     email: "sertac@company.com",
-//     location: "İstanbul, Türkiye",
-//     joinedAt: "2021-03-01",
-//     role: "Admin",
-//     status: "Aktif",
-//   },
-//   {
-//     id: 2,
-//     title: "Ali Veli",
-//     description: "Backend Developer",
-//     email: "ali.veli@company.com",
-//     location: "Ankara, Türkiye",
-//     joinedAt: "2022-06-15",
-//     role: "Staff",
-//     status: "Pasif",
-//   },
-//   {
-//     id: 3,
-//     title: "Ayşe Yılmaz",
-//     description: "UI Designer",
-//     email: "ayse@company.com",
-//     location: "İzmir, Türkiye",
-//     joinedAt: "2020-11-22",
-//     role: "Designer",
-//     status: "Aktif",
-//   },
-//   {
-//     id: 4,
-//     title: "John Doe",
-//     description: "Product Manager",
-//     email: "john.doe@company.com",
-//     location: "New York, USA",
-//     joinedAt: "2019-08-10",
-//     role: "Manager",
-//     status: "Aktif",
-//   },
-//   {
-//     id: 5,
-//     title: "Elif Demir",
-//     description: "QA Engineer",
-//     email: "elif.demir@company.com",
-//     location: "Bursa, Türkiye",
-//     joinedAt: "2023-01-05",
-//     role: "Staff",
-//     status: "Pasif",
-//   },
-//   {
-//     id: 6,
-//     title: "Mehmet Koç",
-//     description: "DevOps Engineer",
-//     email: "mehmet.koc@company.com",
-//     location: "Berlin, Almanya",
-//     joinedAt: "2021-09-17",
-//     role: "Infrastructure",
-//     status: "Aktif",
-//   },
-//   {
-//     id: 7,
-//     title: "Zeynep Kılıç",
-//     description: "Marketing Specialist",
-//     email: "zeynep.kilic@company.com",
-//     location: "İstanbul, Türkiye",
-//     joinedAt: "2020-05-12",
-//     role: "Marketing",
-//     status: "Aktif",
-//   },
-//   {
-//     id: 8,
-//     title: "Ahmet Arslan",
-//     description: "Data Analyst",
-//     email: "ahmet.arslan@company.com",
-//     location: "Ankara, Türkiye",
-//     joinedAt: "2021-11-09",
-//     role: "Data",
-//     status: "Pasif",
-//   },
-//   {
-//     id: 9,
-//     title: "Maria Rossi",
-//     description: "HR Specialist",
-//     email: "maria.rossi@company.com",
-//     location: "Rome, Italy",
-//     joinedAt: "2020-02-17",
-//     role: "HR",
-//     status: "Aktif",
-//   },
-//   {
-//     id: 10,
-//     title: "Kenan Duman",
-//     description: "System Administrator",
-//     email: "kenan.duman@company.com",
-//     location: "İzmir, Türkiye",
-//     joinedAt: "2018-12-03",
-//     role: "IT",
-//     status: "Pasif",
-//   },
-//   {
-//     id: 11,
-//     title: "Emily Clark",
-//     description: "UX Designer",
-//     email: "emily.clark@company.com",
-//     location: "London, UK",
-//     joinedAt: "2022-04-22",
-//     role: "Designer",
-//     status: "Aktif",
-//   },
-//   {
-//     id: 12,
-//     title: "Mustafa Yıldız",
-//     description: "Fullstack Developer",
-//     email: "mustafa.yildiz@company.com",
-//     location: "Antalya, Türkiye",
-//     joinedAt: "2021-07-14",
-//     role: "Developer",
-//     status: "Pasif",
-//   },
-// ];
-
-// ✅ Uygula → Pending değerleri kaydet
-function applyFilters() {
-  selectedStatus.value = pendingSelectedStatus.value;
-  sortKey.value = pendingSortKey.value;
-  sortOrder.value = pendingSortOrder.value;
-
-  showFilter.value = false;
-  openSection.value = "";
-}
-
-// ✅ Resetle → Hem pending hem selected sıfırla
-function resetFilters() {
-  selectedStatus.value = "";
-  sortKey.value = "";
-  sortOrder.value = "asc";
-
-  pendingSelectedStatus.value = "";
-  pendingSortKey.value = "";
-  pendingSortOrder.value = "asc";
-
-  showFilter.value = false;
-  openSection.value = "";
-
-  currentPage.value = 1;
-}
-
 // Loading izleme
 let timeout;
-watch([searchQuery, selectedStatus, sortKey, sortOrder], () => {
+watch([searchQuery], () => {
   clearTimeout(timeout);
   isLoading.value = true;
   timeout = setTimeout(() => {
     isLoading.value = false;
   }, 800);
 });
-
 // Filtrelenmiş ve sıralanmış data
 const filteredItems = computed(() => {
   let result = users.value;
-
-  if (selectedStatus.value) {
-    result = result.filter((item) => item.status === selectedStatus.value);
-  }
 
   if (searchQuery.value.trim() !== "") {
     const q = searchQuery.value.toLowerCase();
@@ -335,16 +156,16 @@ const filteredItems = computed(() => {
     );
   }
 
-  if (sortKey.value) {
-    result = [...result].sort((a, b) => {
-      const aVal = a[sortKey.value];
-      const bVal = b[sortKey.value];
+  // if (sortKey.value) {
+  //   result = [...result].sort((a, b) => {
+  //     const aVal = a[sortKey.value];
+  //     const bVal = b[sortKey.value];
 
-      if (aVal < bVal) return sortOrder.value === "asc" ? -1 : 1;
-      if (aVal > bVal) return sortOrder.value === "asc" ? 1 : -1;
-      return 0;
-    });
-  }
+  //     if (aVal < bVal) return sortOrder.value === "asc" ? -1 : 1;
+  //     if (aVal > bVal) return sortOrder.value === "asc" ? 1 : -1;
+  //     return 0;
+  //   });
+  // }
 
   if (!users.value.length) return [];
 
@@ -667,5 +488,22 @@ body.dark .pagination-footer {
       color: #60a5fa;
     }
   }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: scale(0.96);
+}
+
+.fade-enter-to,
+.fade-leave-from {
+  opacity: 1;
+  transform: scale(1);
 }
 </style>
