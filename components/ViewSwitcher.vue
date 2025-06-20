@@ -23,7 +23,7 @@
       </div>
 
       <!-- View geçişleri -->
-      <Transition name="fade" mode="out-in">
+      <Transition name="fade" mode="out-in" tag="div">
         <component
           :is="isCardView ? 'section' : 'div'"
           :key="isCardView + '-' + currentPage"
@@ -117,6 +117,7 @@ const users = ref([]);
 const isLoading = ref(true);
 
 onMounted(async () => {
+  console.log("ENV CHECK:", import.meta.env.VITE_FIREBASE_PROJECT_ID);
   const q = query(collection(db, "users"), orderBy("id"));
   const snapshot = await getDocs(q);
   users.value = snapshot.docs.map((doc) => ({
