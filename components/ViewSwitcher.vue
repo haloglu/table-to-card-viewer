@@ -54,13 +54,13 @@
                   <th>Durum</th>
                 </tr>
               </thead>
-              <tbody>
-                <template v-for="item in paginatedItems" :key="item.id">
-                  <transition name="fade" tag>
-                    <TableRow v-bind="item" />
-                  </transition>
-                </template>
-              </tbody>
+              <transition-group tag="tbody" name="fade">
+                <TableRow
+                  v-for="item in paginatedItems"
+                  :key="item.id"
+                  v-bind="item"
+                />
+              </transition-group>
             </table>
           </template>
 
@@ -437,19 +437,6 @@ body.dark .empty-message {
   .card-grid {
     grid-template-columns: 1fr;
   }
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  opacity: 1;
-  transform: scale(1);
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-  transform: scale(0.95);
 }
 
 .pagination-footer {
