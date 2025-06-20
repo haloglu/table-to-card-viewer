@@ -109,7 +109,8 @@ export default defineNuxtConfig({
     includeAssets: [
       "favicon.ico",
       "app-icon.png",
-      "offline.html", // 💥 En önemli ekleme → HATA çözülür!
+      "offline.html",
+      "404.html", // ✅ Netlify fallback için (kopyasını almayı unutma)
     ],
 
     manifest: {
@@ -134,11 +135,13 @@ export default defineNuxtConfig({
       ],
     },
 
+    // 💥 EKLENDİ: offline.html'i precache listesine almak için
     workbox: {
+      globPatterns: ["**/*.{js,css,html,ico,png,svg}"], // ✅ offline.html dahil olur
       navigateFallback: "/offline.html",
       navigateFallbackDenylist: [
         new RegExp("^/offline.html$"),
-        new RegExp("\\.\\w+$"), // statik dosyaları dışla
+        new RegExp("\\.\\w+$"),
       ],
       runtimeCaching: [
         {

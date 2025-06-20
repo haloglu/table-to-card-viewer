@@ -1,4 +1,3 @@
-<!-- components/PageSizeSelector.vue -->
 <template>
   <div class="page-size-selector">
     <select
@@ -25,7 +24,7 @@ const props = defineProps({
   },
   options: {
     type: Array,
-    default: () => [5, 10, 15, 20],
+    default: () => [6, 12, 18, 24],
   },
   id: {
     type: String,
@@ -37,7 +36,6 @@ const emit = defineEmits(["update:modelValue"]);
 
 const internalValue = ref(props.modelValue);
 
-// Eğer parent'tan gelen modelValue değişirse local değer güncellensin
 watch(
   () => props.modelValue,
   (val) => {
@@ -45,7 +43,6 @@ watch(
   }
 );
 
-// Eğer local'den değişirse parent'a bildir
 watch(internalValue, (val) => {
   emit("update:modelValue", +val);
 });
@@ -57,11 +54,6 @@ watch(internalValue, (val) => {
   align-items: center;
   gap: 8px;
   font-size: 14px;
-
-  label {
-    font-weight: 500;
-    color: #374151;
-  }
 
   select {
     height: 38px;
@@ -88,14 +80,15 @@ watch(internalValue, (val) => {
   .suffix {
     color: #6b7280;
     font-weight: 400;
+
+    // Mobilde gizle
+    @media (max-width: 768px) {
+      display: none;
+    }
   }
 
-  // Dark mode desteği
+  // Dark mode
   body.dark & {
-    label {
-      color: #ccc;
-    }
-
     select {
       background-color: #1f1f1f;
       color: #ddd;
