@@ -3,7 +3,6 @@
     <font-awesome-icon :icon="['fas', 'search']" class="search-icon" />
     <input
       v-model="searchTerm"
-      @input="$emit('update:search', searchTerm)"
       type="text"
       placeholder="Ara..."
       class="search-input"
@@ -18,12 +17,34 @@
 </template>
 
 <script setup>
-const searchTerm = ref("");
-const emit = defineEmits(["update:search"]);
+import { ref, watch } from "vue";
+
+const props = defineProps({
+  modelValue: {
+    type: String,
+    default: "",
+  },
+});
+const emit = defineEmits(["update:modelValue"]);
+
+const searchTerm = ref(props.modelValue);
+
+// Parent'ten gelen modelValue değişirse searchTerm güncellensin
+watch(
+  () => props.modelValue,
+  (val) => {
+    searchTerm.value = val;
+  }
+);
+
+// searchTerm değişirse parent'a bildirelim
+watch(searchTerm, (val) => {
+  emit("update:modelValue", val);
+});
 
 function clearSearch() {
   searchTerm.value = "";
-  emit("update:search", "");
+  emit("update:modelValue", "");
 }
 </script>
 
@@ -56,12 +77,12 @@ function clearSearch() {
 }
 
 .clear-icon:hover {
-  color: #f87171; /* kırmızımsı hover tonu */
+  color: #f87171;
 }
 
 .search-input {
   width: 100%;
-  padding: 10px 36px 10px 36px; /* 🔁 hem sol hem sağ boşluk */
+  padding: 10px 36px 10px 36px;
   font-size: 15px;
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -71,7 +92,7 @@ function clearSearch() {
   transition: all 0.2s ease;
 }
 
-/* 🌙 Dark Mode */
+/* Dark Mode */
 body.dark .search-input {
   background-color: #2c2c2c;
   color: #f3f3f3;

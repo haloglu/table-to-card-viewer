@@ -5,7 +5,19 @@
         <div class="filter-search-row">
           <PageSizeSelector v-model="pageSize" />
 
-          <SearchInput @update:search="searchQuery = $event" />
+          <!-- Masaüstü SearchBox -->
+          <SearchBox
+            v-if="!isMobile"
+            v-model="searchQuery"
+            @update:search="searchQuery = $event"
+          />
+
+          <!-- Mobil SearchToggle -->
+          <SearchToggle
+            v-else
+            v-model="searchQuery"
+            @update:search="searchQuery = $event"
+          />
 
           <div class="toggle-wrapper">
             <ToggleSwitch v-model="isCardView" />
@@ -45,15 +57,72 @@
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>Kullanıcı</th>
-                  <th>Pozisyon</th>
-                  <th>Email</th>
-                  <th>Lokasyon</th>
-                  <th>Katılım</th>
-                  <th>Rol</th>
-                  <th>Durum</th>
+                  <th
+                    @click="setSort('title')"
+                    :class="{ sorted: sortKey === 'title' }"
+                  >
+                    Kullanıcı
+                    <span v-if="sortKey === 'title'">{{
+                      sortOrder === "asc" ? "▲" : "▼"
+                    }}</span>
+                  </th>
+                  <th
+                    @click="setSort('description')"
+                    :class="{ sorted: sortKey === 'description' }"
+                  >
+                    Pozisyon
+                    <span v-if="sortKey === 'description'">{{
+                      sortOrder === "asc" ? "▲" : "▼"
+                    }}</span>
+                  </th>
+                  <th
+                    @click="setSort('email')"
+                    :class="{ sorted: sortKey === 'email' }"
+                  >
+                    Email
+                    <span v-if="sortKey === 'email'">{{
+                      sortOrder === "asc" ? "▲" : "▼"
+                    }}</span>
+                  </th>
+                  <th
+                    @click="setSort('location')"
+                    :class="{ sorted: sortKey === 'location' }"
+                  >
+                    Lokasyon
+                    <span v-if="sortKey === 'location'">{{
+                      sortOrder === "asc" ? "▲" : "▼"
+                    }}</span>
+                  </th>
+                  <th
+                    @click="setSort('joinDate')"
+                    :class="{ sorted: sortKey === 'joinDate' }"
+                  >
+                    Katılım
+                    <span v-if="sortKey === 'joinDate'">{{
+                      sortOrder === "asc" ? "▲" : "▼"
+                    }}</span>
+                  </th>
+                  <th
+                    @click="setSort('role')"
+                    :class="{ sorted: sortKey === 'role' }"
+                  >
+                    Rol
+                    <span v-if="sortKey === 'role'">{{
+                      sortOrder === "asc" ? "▲" : "▼"
+                    }}</span>
+                  </th>
+                  <th
+                    @click="setSort('status')"
+                    :class="{ sorted: sortKey === 'status' }"
+                  >
+                    Durum
+                    <span v-if="sortKey === 'status'">{{
+                      sortOrder === "asc" ? "▲" : "▼"
+                    }}</span>
+                  </th>
                 </tr>
               </thead>
+
               <transition-group tag="tbody" name="fade">
                 <TableRow
                   v-for="item in paginatedItems"
@@ -105,6 +174,8 @@
 import { ref, onMounted, onBeforeUnmount, computed, watch } from "vue";
 import { db } from "../src/utils/firebase";
 import { collection, query, orderBy, getDocs } from "firebase/firestore";
+import SearchBox from "~/components/SearchBox.vue";
+import SearchToggle from "~/components/SearchToggle.vue";
 import ToggleSwitch from "~/components/ToggleSwitch.vue";
 import CardItem from "~/components/CardItem.vue";
 import TableRow from "~/components/TableRow.vue";
@@ -131,6 +202,17 @@ const searchQuery = ref("");
 const isCardView = ref(true);
 const currentPage = ref(1);
 const pageSize = ref(6);
+const sortKey = ref("");
+const sortOrder = ref("asc");
+
+onMounted(() => {
+  checkIsMobile();
+  window.addEventListener("resize", checkIsMobile);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("resize", checkIsMobile);
+});
 
 // Loading izleme
 let timeout;
@@ -157,20 +239,15 @@ const filteredItems = computed(() => {
     );
   }
 
-  // if (sortKey.value) {
-  //   result = [...result].sort((a, b) => {
-  //     const aVal = a[sortKey.value];
-  //     const bVal = b[sortKey.value];
-
-  //     if (aVal < bVal) return sortOrder.value === "asc" ? -1 : 1;
-  //     if (aVal > bVal) return sortOrder.value === "asc" ? 1 : -1;
-  //     return 0;
-  //   });
-  // }
-
   if (!users.value.length) return [];
 
   return result;
+});
+
+watch([pageSize, filteredItems], () => {
+  if (currentPage.value > totalPages.value) {
+    currentPage.value = 1;
+  }
 });
 
 watch(filteredItems, (val) => {
@@ -193,24 +270,16 @@ function goToPage(page) {
   currentPage.value = page;
 }
 
-// Mobil görünüm toggle
-const isMobile = ref(false);
-
 const checkIsMobile = () => {
   isMobile.value = window.innerWidth <= 768;
+  console.log("isMobile:", isMobile.value);
   if (isMobile.value) {
     isCardView.value = true;
   }
 };
 
-onMounted(() => {
-  checkIsMobile();
-  window.addEventListener("resize", checkIsMobile);
-});
-
-onBeforeUnmount(() => {
-  window.removeEventListener("resize", checkIsMobile);
-});
+// Mobil görünüm toggle
+const isMobile = ref(false);
 </script>
 
 <style scoped lang="scss">

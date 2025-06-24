@@ -41,6 +41,10 @@ defineProps({
   joinedAt: String,
   role: String,
   status: String,
+  compact: {
+    type: Boolean,
+    default: false, // default geniş kart
+  },
 });
 
 const getInitials = (name) => {
@@ -72,6 +76,14 @@ const getColor = (name) => {
 
 <style scoped lang="scss">
 .card {
+  max-width: 320px; // Genel liste için (örnek)
+
+  /* compact prop aktifse daralt */
+  &.compact {
+    max-width: 220px;
+  }
+
+  /* diğer stiller aynı */
   position: relative;
   background-color: #fff;
   border: 1px solid #e5e7eb;
