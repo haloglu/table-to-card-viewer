@@ -56,71 +56,80 @@
           <template v-else-if="filteredItems.length > 0 && !isCardView">
             <table class="data-table">
               <thead>
+                <!-- Başlık satırı -->
                 <tr>
                   <th
                     @click="setSort('title')"
                     :class="{ sorted: sortKey === 'title' }"
                   >
                     Kullanıcı
-                    <span v-if="sortKey === 'title'">{{
-                      sortOrder === "asc" ? "▲" : "▼"
-                    }}</span>
+                    <span v-if="sortKey === 'title'">
+                      {{ sortOrder === "asc" ? "▲" : "▼" }}
+                    </span>
                   </th>
                   <th
                     @click="setSort('description')"
                     :class="{ sorted: sortKey === 'description' }"
                   >
                     Pozisyon
-                    <span v-if="sortKey === 'description'">{{
-                      sortOrder === "asc" ? "▲" : "▼"
-                    }}</span>
+                    <span v-if="sortKey === 'description'">
+                      {{ sortOrder === "asc" ? "▲" : "▼" }}
+                    </span>
                   </th>
                   <th
                     @click="setSort('email')"
                     :class="{ sorted: sortKey === 'email' }"
                   >
                     Email
-                    <span v-if="sortKey === 'email'">{{
-                      sortOrder === "asc" ? "▲" : "▼"
-                    }}</span>
+                    <span v-if="sortKey === 'email'">
+                      {{ sortOrder === "asc" ? "▲" : "▼" }}
+                    </span>
                   </th>
                   <th
                     @click="setSort('location')"
                     :class="{ sorted: sortKey === 'location' }"
                   >
                     Lokasyon
-                    <span v-if="sortKey === 'location'">{{
-                      sortOrder === "asc" ? "▲" : "▼"
-                    }}</span>
+                    <span v-if="sortKey === 'location'">
+                      {{ sortOrder === "asc" ? "▲" : "▼" }}
+                    </span>
                   </th>
                   <th
                     @click="setSort('joinDate')"
                     :class="{ sorted: sortKey === 'joinDate' }"
                   >
                     Katılım
-                    <span v-if="sortKey === 'joinDate'">{{
-                      sortOrder === "asc" ? "▲" : "▼"
-                    }}</span>
+                    <span v-if="sortKey === 'joinDate'">
+                      {{ sortOrder === "asc" ? "▲" : "▼" }}
+                    </span>
                   </th>
                   <th
                     @click="setSort('role')"
                     :class="{ sorted: sortKey === 'role' }"
                   >
                     Rol
-                    <span v-if="sortKey === 'role'">{{
-                      sortOrder === "asc" ? "▲" : "▼"
-                    }}</span>
+                    <span v-if="sortKey === 'role'">
+                      {{ sortOrder === "asc" ? "▲" : "▼" }}
+                    </span>
                   </th>
                   <th
                     @click="setSort('status')"
                     :class="{ sorted: sortKey === 'status' }"
                   >
                     Durum
-                    <span v-if="sortKey === 'status'">{{
-                      sortOrder === "asc" ? "▲" : "▼"
-                    }}</span>
+                    <span v-if="sortKey === 'status'">
+                      {{ sortOrder === "asc" ? "▲" : "▼" }}
+                    </span>
                   </th>
                 </tr>
+
+                <!-- 🎯 Filtre Satırı -->
+                <FilterRow
+                  v-model="filterValues"
+                  :statusOptions="statusOptions"
+                  :roleOptions="roleOptions"
+                  :locationOptions="locationOptions"
+                />
               </thead>
 
               <transition-group tag="tbody" name="fade">
@@ -182,6 +191,7 @@ import TableRow from "~/components/TableRow.vue";
 import SearchInput from "~/components/SearchInput.vue";
 import PageSizeSelector from "~/components/PageSizeSelector.vue";
 import Pagination from "~/components/Pagination.vue";
+import FilterRow from "~/components/FilterRow.vue";
 
 // 🔥 Firebase'den veri çekiyoruz
 const users = ref([]);
@@ -204,6 +214,11 @@ const currentPage = ref(1);
 const pageSize = ref(6);
 const sortKey = ref("");
 const sortOrder = ref("asc");
+const filterValues = ref({
+  status: "",
+  role: "",
+  location: "",
+});
 
 onMounted(() => {
   checkIsMobile();
@@ -223,10 +238,27 @@ watch([searchQuery], () => {
     isLoading.value = false;
   }, 800);
 });
+
+const statusOptions = computed(() => {
+  const statuses = users.value.map((user) => user.status);
+  return [...new Set(statuses)].filter(Boolean);
+});
+
+const roleOptions = computed(() => {
+  const roles = users.value.map((user) => user.role);
+  return [...new Set(roles)].filter(Boolean);
+});
+
+const locationOptions = computed(() => {
+  const locations = users.value.map((user) => user.location);
+  return [...new Set(locations)].filter(Boolean);
+});
+
 // Filtrelenmiş ve sıralanmış data
 const filteredItems = computed(() => {
   let result = users.value;
 
+  // Arama filtresi
   if (searchQuery.value.trim() !== "") {
     const q = searchQuery.value.toLowerCase();
     result = result.filter(
@@ -239,7 +271,20 @@ const filteredItems = computed(() => {
     );
   }
 
-  if (!users.value.length) return [];
+  // Dropdown filtreleri
+  if (filterValues.value.status) {
+    result = result.filter((item) => item.status === filterValues.value.status);
+  }
+
+  if (filterValues.value.role) {
+    result = result.filter((item) => item.role === filterValues.value.role);
+  }
+
+  if (filterValues.value.location) {
+    result = result.filter(
+      (item) => item.location === filterValues.value.location
+    );
+  }
 
   return result;
 });
