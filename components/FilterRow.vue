@@ -1,32 +1,58 @@
 <template>
   <tr class="filter-row">
-    <th></th>
-    <!-- Kullanıcı -->
-    <th></th>
-    <!-- Pozisyon -->
-    <th></th>
-    <!-- Email -->
+    <th>
+      <FilterDropdown
+        v-model="filters.title"
+        :options="titleOptions"
+        placeholder="İsim"
+      />
+    </th>
+
+    <th>
+      <FilterDropdown
+        v-model="filters.description"
+        :options="descriptionOptions"
+        placeholder="Pozisyon"
+      />
+    </th>
+
+    <th>
+      <FilterDropdown
+        v-model="filters.email"
+        :options="emailOptions"
+        placeholder="Email"
+      />
+    </th>
+
     <th>
       <FilterDropdown
         v-model="filters.location"
         :options="locationOptions"
-        placeholder="Konum Seç"
+        placeholder="Konum"
       />
     </th>
-    <th></th>
-    <!-- Katılım -->
+
+    <th>
+      <FilterDropdown
+        v-model="filters.joinDate"
+        :options="joinDateOptions"
+        placeholder="Katılım"
+      />
+    </th>
+
     <th>
       <FilterDropdown
         v-model="filters.role"
         :options="roleOptions"
-        placeholder="Rol Seç"
+        placeholder="Rol"
       />
     </th>
+
     <th>
       <FilterDropdown
         v-model="filters.status"
         :options="statusOptions"
-        placeholder="Durum Seç"
+        placeholder="Durum"
       />
     </th>
   </tr>
@@ -41,14 +67,22 @@ const props = defineProps({
   statusOptions: Array,
   roleOptions: Array,
   locationOptions: Array,
+  titleOptions: Array,
+  descriptionOptions: Array,
+  emailOptions: Array,
+  joinDateOptions: Array,
 });
 
 const emit = defineEmits(["update:modelValue"]);
 
 const filters = reactive({
-  status: props.modelValue?.status || "",
-  role: props.modelValue?.role || "",
+  title: props.modelValue?.title || "",
+  description: props.modelValue?.description || "",
+  email: props.modelValue?.email || "",
+  joinDate: props.modelValue?.joinDate || "",
   location: props.modelValue?.location || "",
+  role: props.modelValue?.role || "",
+  status: props.modelValue?.status || "",
 });
 
 watch(filters, (newVal) => {

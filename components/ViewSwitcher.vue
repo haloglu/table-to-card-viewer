@@ -95,11 +95,11 @@
                     </span>
                   </th>
                   <th
-                    @click="setSort('joinDate')"
-                    :class="{ sorted: sortKey === 'joinDate' }"
+                    @click="setSort('joinedAt')"
+                    :class="{ sorted: sortKey === 'joinedAt' }"
                   >
                     Katılım
-                    <span v-if="sortKey === 'joinDate'">
+                    <span v-if="sortKey === 'joinedAt'">
                       {{ sortOrder === "asc" ? "▲" : "▼" }}
                     </span>
                   </th>
@@ -129,6 +129,10 @@
                   :statusOptions="statusOptions"
                   :roleOptions="roleOptions"
                   :locationOptions="locationOptions"
+                  :titleOptions="titleOptions"
+                  :descriptionOptions="descriptionOptions"
+                  :emailOptions="emailOptions"
+                  :joinDateOptions="joinDateOptions"
                 />
               </thead>
 
@@ -215,9 +219,13 @@ const pageSize = ref(6);
 const sortKey = ref("");
 const sortOrder = ref("asc");
 const filterValues = ref({
-  status: "",
-  role: "",
+  title: "",
+  description: "",
+  email: "",
   location: "",
+  joinedAt: "",
+  role: "",
+  status: "",
 });
 
 onMounted(() => {
@@ -239,6 +247,21 @@ watch([searchQuery], () => {
   }, 800);
 });
 
+const titleOptions = computed(() => {
+  const titles = users.value.map((user) => user.title);
+  return [...new Set(titles)].filter(Boolean);
+});
+
+const descriptionOptions = computed(() => {
+  const descriptions = users.value.map((user) => user.description);
+  return [...new Set(descriptions)].filter(Boolean);
+});
+
+const emailOptions = computed(() => {
+  const emails = users.value.map((user) => user.email);
+  return [...new Set(emails)].filter(Boolean);
+});
+
 const statusOptions = computed(() => {
   const statuses = users.value.map((user) => user.status);
   return [...new Set(statuses)].filter(Boolean);
@@ -252,6 +275,19 @@ const roleOptions = computed(() => {
 const locationOptions = computed(() => {
   const locations = users.value.map((user) => user.location);
   return [...new Set(locations)].filter(Boolean);
+});
+
+const joinDateOptions = computed(() => {
+  const years = users.value
+    .map((user) => user.joinedAt?.slice(0, 4))
+    .filter((year) => year)
+    .filter((year, index, arr) => arr.indexOf(year) === index)
+    .sort((a, b) => b - a); // Yeni tarihler önce gelsin
+  return years;
+});
+
+watch(joinDateOptions, (val) => {
+  console.log("JOIN DATE OPTIONS:", val);
 });
 
 // Filtrelenmiş ve sıralanmış data
@@ -271,10 +307,40 @@ const filteredItems = computed(() => {
     );
   }
 
-  // Dropdown filtreleri
+  if (filterValues.value.title) {
+    result = result.filter((item) =>
+      item.title.toLowerCase().includes(filterValues.value.title.toLowerCase())
+    );
+  }
+
+  if (filterValues.value.description) {
+    result = result.filter((item) =>
+      item.description
+        .toLowerCase()
+        .includes(filterValues.value.description.toLowerCase())
+    );
+  }
+
+  if (filterValues.value.email) {
+    result = result.filter((item) =>
+      item.email.toLowerCase().includes(filterValues.value.email.toLowerCase())
+    );
+  }
+
   if (filterValues.value.status) {
     result = result.filter((item) => item.status === filterValues.value.status);
   }
+
+  // 🎯 joinedAt yıl bazlı filtreleme
+  if (filterValues.value.joinDate) {
+    result = result.filter(
+      (item) => item.joinedAt?.slice(0, 4) === filterValues.value.joinDate
+    );
+  }
+
+  watch(joinDateOptions, (val) => {
+    console.log("JOIN DATE OPTIONS:", val);
+  });
 
   if (filterValues.value.role) {
     result = result.filter((item) => item.role === filterValues.value.role);
