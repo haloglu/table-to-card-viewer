@@ -12,19 +12,21 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { computed } from "vue";
 import SearchInput from "./SearchInput.vue";
 
-const searchTerm = ref("");
-const emit = defineEmits(["update:search"]);
+const props = defineProps({
+  modelValue: String,
+});
+const emit = defineEmits(["update:modelValue"]);
 
-watch(searchTerm, (val) => {
-  emit("update:search", val);
+const searchTerm = computed({
+  get: () => props.modelValue,
+  set: (val) => emit("update:modelValue", val),
 });
 
 function clearSearch() {
   searchTerm.value = "";
-  emit("update:search", "");
 }
 </script>
 

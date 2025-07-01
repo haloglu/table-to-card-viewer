@@ -156,6 +156,16 @@
               <p class="empty-message">
                 Aradığınız kriterlere uygun sonuç bulunamadı.
               </p>
+              <button
+                @click="resetFilters"
+                class="btn btn-outline-secondary mt-2"
+              >
+                <font-awesome-icon
+                  :icon="['fas', 'rotate-left']"
+                  class="me-1"
+                />
+                Filtreleri Sıfırla
+              </button>
             </div>
           </template>
         </component>
@@ -388,6 +398,19 @@ const checkIsMobile = () => {
     isCardView.value = true;
   }
 };
+
+function resetFilters() {
+  filterValues.value = {
+    title: "",
+    description: "",
+    email: "",
+    location: "",
+    joinedAt: "",
+    role: "",
+    status: "",
+  };
+  searchQuery.value = "";
+}
 
 // Mobil görünüm toggle
 const isMobile = ref(false);

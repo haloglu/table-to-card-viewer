@@ -85,9 +85,27 @@ const filters = reactive({
   status: props.modelValue?.status || "",
 });
 
-watch(filters, (newVal) => {
-  emit("update:modelValue", { ...newVal });
-});
+// Watcher: reactive filters değiştikçe parent'e bildirme
+watch(
+  filters,
+  () => {
+    emit("update:modelValue", { ...filters });
+  },
+  { deep: true }
+);
+
+// 🔄 Reset fonksiyonu
+function resetFilters() {
+  emit("update:modelValue", {
+    title: "",
+    description: "",
+    email: "",
+    joinDate: "",
+    location: "",
+    role: "",
+    status: "",
+  });
+}
 </script>
 
 <style scoped>
